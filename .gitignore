@@ -1,0 +1,25 @@
+# Personal settings and credentials
+config.json
+connections.json
+token.json
+language.json
+*.log
+
+# Python environments and cache
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+
+# Generated builds
+build/
+dist/
+output/
+
+# Editor and Windows files
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
