@@ -6,9 +6,9 @@ A compact Windows tray app for following Twitch streams, with optional Telegram 
 
 ## Status
 
-**1.0.0** — available for Windows 10 and 11 (64-bit).
+**1.0.1** — available for Windows 10 and 11 (64-bit).
 
-[**Download the Windows installer**](https://github.com/romandexty/dexty-twitch-notifier/releases/download/v1.0.0/Dexty_Twitch_Notifier_Setup_v1.0.0.exe)
+[**Download the Windows installer**](https://github.com/romandexty/dexty-twitch-notifier/releases/download/v1.0.1/Dexty_Twitch_Notifier_Setup_v1.0.1.exe)
 
 Python is not required. Install the app, then follow the guided Twitch and optional Telegram setup.
 
@@ -25,6 +25,8 @@ Python is not required. Install the app, then follow the guided Twitch and optio
 - Compact tray popup, manual refresh, pause and editable streamer list.
 - Optional Telegram notifications using your own bot, with a test button and private Chat ID discovery.
 - Optional Windows startup; closing the window keeps the app in the tray. Use **Quit** to exit.
+- Check for updates in a popup with a GitHub download link.
+- Optional “Don’t ask again” when removing channels.
 
 ## Install
 
