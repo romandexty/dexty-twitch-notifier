@@ -13,7 +13,8 @@ def app_bundle(executable=None):
     return None
 
 def set_mac_startup(enabled, home=None, executable=None):
-    target = Path(home or Path.home()) / 'Library' / 'LaunchAgents' / AGENT_NAME
+    user_home = Path(home or Path.home()).resolve()
+    target = user_home / 'Library' / 'LaunchAgents' / AGENT_NAME
     try:
         if not enabled:
             target.unlink(missing_ok=True)
@@ -22,7 +23,7 @@ def set_mac_startup(enabled, home=None, executable=None):
         if bundle is None:
             return False
         # Resolve to the installed application; never save a temporary build path.
-        if not (bundle.parent == Path('/Applications') or bundle.parent == Path(home or Path.home()) / 'Applications'):
+        if not (bundle.parent == Path('/Applications').resolve() or bundle.parent == (user_home / 'Applications').resolve()):
             return False
         target.parent.mkdir(parents=True, exist_ok=True)
         data = {'Label': 'me.dexty.twitch-notifier',
@@ -34,3 +35,4 @@ def set_mac_startup(enabled, home=None, executable=None):
         return True
     except OSError:
         return False
+
