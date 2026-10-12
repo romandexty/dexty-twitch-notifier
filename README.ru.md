@@ -4,9 +4,9 @@
 
 [English](README.md) · [Инструкция](USER_GUIDE.md)
 
-**1.0.0** — доступна для Windows 10 и 11 (64-bit).
+**1.0.1** — доступна для Windows 10 и 11 (64-bit).
 
-[**Скачать установщик для Windows**](https://github.com/romandexty/dexty-twitch-notifier/releases/download/v1.0.0/Dexty_Twitch_Notifier_Setup_v1.0.0.exe)
+[**Скачать установщик для Windows**](https://github.com/romandexty/dexty-twitch-notifier/releases/download/v1.0.1/Dexty_Twitch_Notifier_Setup_v1.0.1.exe)
 
 Python не требуется. Установите программу и следуйте пошаговой настройке Twitch и, по желанию, Telegram.
 
