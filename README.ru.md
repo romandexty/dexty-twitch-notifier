@@ -4,7 +4,15 @@
 
 [English](README.md) · [Инструкция](USER_GUIDE.md)
 
-Версия **1.0.0** подготовлена для тестирования владельцем. Полный вход в Twitch, доставка Telegram, установка на чистую систему и автозагрузка ещё требуют проверки перед стабильным публичным релизом.
+**1.0.0** — доступна для Windows 10 и 11 (64-bit).
+
+[**Скачать установщик для Windows**](https://github.com/romandexty/dexty-twitch-notifier/releases/download/v1.0.0/Dexty_Twitch_Notifier_Setup_v1.0.0.exe)
+
+Python не требуется. Установите программу и следуйте пошаговой настройке Twitch и, по желанию, Telegram.
+
+## Screenshots
+<img width="910" height="629" alt="shot_261012_172346" src="https://github.com/user-attachments/assets/5059e6ef-7748-412c-af82-141d6ecad15e" />
+<img width="389" height="616" alt="shot_261012_172340" src="https://github.com/user-attachments/assets/7401381a-7b74-429c-970c-773887dc9fcd" />
 
 ## Возможности
 
