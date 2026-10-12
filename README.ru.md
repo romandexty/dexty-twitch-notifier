@@ -10,7 +10,8 @@
 
 Python не требуется. Установите программу и следуйте пошаговой настройке Twitch и, по желанию, Telegram.
 
-## Screenshots
+## Скриншоты
+
 <img width="910" height="629" alt="shot_261012_172346" src="https://github.com/user-attachments/assets/5059e6ef-7748-412c-af82-141d6ecad15e" />
 <img width="389" height="616" alt="shot_261012_172340" src="https://github.com/user-attachments/assets/7401381a-7b74-429c-970c-773887dc9fcd" />
 
