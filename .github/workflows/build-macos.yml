@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 30
     env:
       QT_QPA_PLATFORM: offscreen
-      DEXTY_DATA_DIR: ${{ runner.temp }}/dexty-test-profile
+      DEXTY_DATA_DIR: ${{ github.workspace }}/.dexty-test-profile
       MACOSX_DEPLOYMENT_TARGET: '15.0'
     steps:
       - uses: actions/checkout@v4
