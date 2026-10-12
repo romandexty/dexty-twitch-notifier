@@ -13,8 +13,8 @@ A compact Windows tray app for following Twitch streams, with optional Telegram 
 Python is not required. Install the app, then follow the guided Twitch and optional Telegram setup.
 
 ## Screenshots
-<img width="389" height="616" alt="shot_261012_172340" src="https://github.com/user-attachments/assets/94a6b720-67ed-4b02-a4dc-9507ec549d1d" />
 <img width="910" height="629" alt="shot_261012_172346" src="https://github.com/user-attachments/assets/89a0e70e-98e3-4364-85f8-24d42badb593" />
+<img width="389" height="616" alt="shot_261012_172340" src="https://github.com/user-attachments/assets/94a6b720-67ed-4b02-a4dc-9507ec549d1d" />
 
 ## Features
 
