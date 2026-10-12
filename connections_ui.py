@@ -11,6 +11,19 @@ KEYS = ('twitch_client_id', 'twitch_client_secret', 'telegram_bot_token', 'teleg
 LEGACY_KEYS = dict(zip(('TWITCH_APP_ID','TWITCH_APP_SECRET','TG_BOT_TOKEN','TG_CHAT_ID'), KEYS))
 
 def wait_for_parent(pid):
+    import sys
+    if sys.platform != 'win32':
+        import time
+        if pid <= 0:
+            raise ValueError('Invalid parent process')
+        deadline = time.monotonic() + 30
+        while time.monotonic() < deadline:
+            try:
+                os.kill(pid, 0)
+            except ProcessLookupError:
+                return
+            time.sleep(0.1)
+        raise RuntimeError('Previous instance is still closing.')
     import ctypes
     from ctypes import wintypes
     kernel = ctypes.WinDLL('kernel32', use_last_error=True)

@@ -30,6 +30,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from platform_support import set_mac_startup
 from updates_ui import UpdatesDialog, APP_VERSION
 from public_twitch import PublicTwitch, PUBLIC_CLIENT_ID, SignInRequired
 from setup_ui import SetupDialog as ConnectionsDialog
@@ -502,8 +503,10 @@ def format_duration(started_at):
 
 
 def set_start_with_windows(enabled: bool):
+    if sys.platform == "darwin":
+        return set_mac_startup(enabled)
     if sys.platform != "win32":
-        return
+        return False
     try:
         import winreg
 
@@ -525,8 +528,9 @@ def set_start_with_windows(enabled: bool):
                     winreg.DeleteValue(key, "DextyTwitchNotifier")
                 except FileNotFoundError:
                     pass
+        return True
     except Exception:
-        pass
+        return False
 
 
 class StatusDot(QLabel):
@@ -965,7 +969,7 @@ class MainWindow(QMainWindow):
         settings_layout.setContentsMargins(14, 12, 14, 12)
         self.telegram_checkbox = QCheckBox(tr('Уведомления в Telegram'))
         self.telegram_checkbox.toggled.connect(self.on_telegram_toggle)
-        self.startup_checkbox = QCheckBox(tr('Запускать вместе с Windows'))
+        self.startup_checkbox = QCheckBox(tr('Запускать при входе' if sys.platform == 'darwin' else 'Запускать вместе с Windows'))
         self.startup_checkbox.toggled.connect(self.on_startup_toggle)
         self.pause_checkbox = QCheckBox(tr('Пауза мониторинга'))
         self.pause_checkbox.toggled.connect(self.on_pause_toggle)
@@ -1415,6 +1419,10 @@ class TwitchNotifierApp(QObject):
         self.pause_action.setCheckable(True)
         self.pause_action.toggled.connect(self.on_pause_changed)
         menu.addAction(open_action)
+        if sys.platform == "darwin":
+            popup_action = QAction(tr('Открыть компактное окно'), menu)
+            popup_action.triggered.connect(lambda: QTimer.singleShot(0, self._toggle_tray_popup))
+            menu.addAction(popup_action)
         menu.addAction(refresh_action)
         menu.addAction(self.pause_action)
         menu.addSeparator()
@@ -1426,7 +1434,7 @@ class TwitchNotifierApp(QObject):
         self.telegram_action = telegram_action
         menu.addAction(telegram_action)
 
-        startup_action = QAction(tr('Запускать вместе с Windows'), menu)
+        startup_action = QAction(tr('Запускать при входе' if sys.platform == 'darwin' else 'Запускать вместе с Windows'), menu)
         startup_action.setCheckable(True)
         startup_action.setChecked(self.config.get("start_with_windows", False))
         startup_action.toggled.connect(self._toggle_startup_from_tray)
@@ -1453,8 +1461,15 @@ class TwitchNotifierApp(QObject):
         self.main_window.telegram_checkbox.blockSignals(False)
 
     def on_startup_changed(self, checked):
+        if not set_start_with_windows(checked):
+            previous = self.config.get("start_with_windows", False)
+            for control in (self.startup_action, self.main_window.startup_checkbox):
+                control.blockSignals(True)
+                control.setChecked(previous)
+                control.blockSignals(False)
+            QMessageBox.warning(self.main_window, "Dexty Twitch Notifier", tr('Не удалось изменить автозагрузку.'))
+            return
         self.config.set("start_with_windows", checked)
-        set_start_with_windows(checked)
         # Mirror the same state into the tray without firing the action again.
         self.startup_action.blockSignals(True)
         self.startup_action.setChecked(checked)
@@ -1485,6 +1500,8 @@ class TwitchNotifierApp(QObject):
             self.popup.show_near_cursor()
 
     def on_tray_activated(self, reason):
+        if sys.platform == "darwin":
+            return  # macOS opens the native menu; its actions open either window.
         if reason == QSystemTrayIcon.Trigger:
             # Do not show the popup immediately. Windows first reports the
             # initial click even when it is about to become a double-click.
@@ -1554,9 +1571,37 @@ class SingleInstance(QObject):
 
     def __init__(self, parent=None, name="DextyTwitchNotifier"):
         super().__init__(parent)
+        self.kernel = None
+        self.handle = None
+        self.server = None
+        self.lock = None
+        from PySide6.QtNetwork import QLocalServer, QLocalSocket
+        if sys.platform != "win32":
+            from PySide6.QtCore import QLockFile
+            import tempfile
+            user_name = str(os.getuid())
+            pipe_name = name + "-" + user_name
+            self.lock = QLockFile(os.path.join(tempfile.gettempdir(), pipe_name + ".lock"))
+            self.lock.setStaleLockTime(0)
+            self.primary = self.lock.tryLock(0)
+            if not self.primary:
+                if self.lock.error() != QLockFile.LockFailedError:
+                    raise RuntimeError("Could not create the application lock.")
+                client = QLocalSocket(self)
+                client.connectToServer(pipe_name)
+                if client.waitForConnected(2500):
+                    client.disconnectFromServer()
+                return
+            QLocalServer.removeServer(pipe_name)
+            self.server = QLocalServer(self)
+            self.server.setSocketOptions(QLocalServer.UserAccessOption)
+            if not self.server.listen(pipe_name):
+                self.close()
+                raise RuntimeError(tr('Не удалось открыть локальный канал программы.'))
+            self.server.newConnection.connect(self._activate)
+            return
         import ctypes
         from ctypes import wintypes
-        from PySide6.QtNetwork import QLocalServer, QLocalSocket
         self.kernel = ctypes.WinDLL("kernel32", use_last_error=True)
         self.kernel.CreateMutexW.argtypes = [ctypes.c_void_p, wintypes.BOOL, wintypes.LPCWSTR]
         self.kernel.CreateMutexW.restype = wintypes.HANDLE
@@ -1595,6 +1640,9 @@ class SingleInstance(QObject):
         if self.handle:
             self.kernel.CloseHandle(self.handle)
             self.handle = None
+        if self.lock is not None:
+            self.lock.unlock()
+            self.lock = None
 
 
 def self_test(qt_app, report_path):

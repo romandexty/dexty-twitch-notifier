@@ -21,7 +21,8 @@ class ReleaseTests(unittest.TestCase):
     def setUpClass(cls):
         cls.app = QApplication.instance() or QApplication([])
         from PySide6.QtGui import QFontDatabase
-        QFontDatabase.addApplicationFont('C:/Windows/Fonts/segoeui.ttf')
+        if sys.platform == 'win32':
+            QFontDatabase.addApplicationFont('C:/Windows/Fonts/segoeui.ttf')
         loader = importlib.machinery.SourceFileLoader('notifier', str(Path(__file__).with_name('twitch_notifier_gui.pyw')))
         spec = importlib.util.spec_from_loader(loader.name, loader)
         cls.module = importlib.util.module_from_spec(spec)

@@ -1,9 +1,11 @@
 """Small, explicit Russian/English catalog; language changes apply on restart."""
 import json
 import os
+import sys
 from pathlib import Path
 
-FOLDER = Path(os.environ.get('DEXTY_DATA_DIR') or Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'DextyTwitchNotifier')
+DEFAULT_DATA_ROOT = Path.home() / 'Library' / 'Application Support' if sys.platform == 'darwin' else Path(os.environ.get('LOCALAPPDATA', Path.home()))
+FOLDER = Path(os.environ.get('DEXTY_DATA_DIR') or DEFAULT_DATA_ROOT / 'DextyTwitchNotifier')
 FOLDER.mkdir(parents=True, exist_ok=True)
 LANGUAGE_FILE = FOLDER / 'language.json'
 try:
@@ -12,6 +14,9 @@ except (OSError, ValueError):
     LANGUAGE = 'en'
 
 EN = {
+    "Запускать при входе": "Start at login",
+    "Открыть компактное окно": "Open stream popup",
+    "Не удалось изменить автозагрузку.": "Could not change startup settings.",
     'Обновления': 'Updates',
     'Установленная версия: {version}': 'Installed version: {version}',
     'Проверить обновления': 'Check for updates',
