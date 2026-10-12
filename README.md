@@ -52,7 +52,9 @@ This is an independent project and is not affiliated with Twitch or Telegram.
 
 ## Licensing
 
-The author's source license has not yet been selected. Source visibility alone does not grant permission to redistribute or modify the author's code. Third-party components retain their own licenses; see `ThirdPartyNotices`. PySide6 / Qt are distributed as separate libraries. Retain their notices and applicable LGPL rights when distributing the app.
+This project's original source code is licensed under the [MIT License](LICENSE).
+
+Third-party components retain their own licenses; see [ThirdPartyNotices](ThirdPartyNotices). PySide6 / Qt remain subject to their respective licenses.
 
 
 
