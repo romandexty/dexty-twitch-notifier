@@ -2,7 +2,7 @@
 [Setup]
 AppId={{1FE13B26-89D6-48F2-B71D-BDCEFD367D93}
 AppName={#AppName}
-AppVersion=1.0.0
+AppVersion=1.0.1
 AppPublisher=Dexty
 DefaultDirName={autopf}\Dexty Twitch Notifier
 DefaultGroupName={#AppName}
@@ -11,7 +11,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 OutputDir=output
-OutputBaseFilename=Dexty_Twitch_Notifier_Setup_v1.0.0
+OutputBaseFilename=Dexty_Twitch_Notifier_Setup_v1.0.1
 SetupIconFile=Dexty.ico
 UninstallDisplayIcon={app}\DextyTwitchNotifier.exe
 AppMutex=Local\DextyTwitchNotifier

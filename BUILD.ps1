@@ -10,6 +10,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed.' }
 & $buildPython -m PyInstaller --noconfirm DextyTwitchNotifier.spec
 if ($LASTEXITCODE -ne 0) { throw 'Executable build failed.' }
 Copy-Item -LiteralPath ThirdPartyNotices -Destination dist/DextyTwitchNotifier -Recurse -Force
+Copy-Item -LiteralPath LICENSE -Destination dist/DextyTwitchNotifier -Force
 $compiler = Get-Command ISCC.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1
 if (!$compiler) {
     $compiler = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6/ISCC.exe'
@@ -17,7 +18,8 @@ if (!$compiler) {
 if (!(Test-Path -LiteralPath $compiler)) { throw 'Install Inno Setup 6 or add ISCC.exe to PATH.' }
 & $compiler setup.iss
 if ($LASTEXITCODE -ne 0) { throw 'Installer build failed.' }
-Write-Host 'Ready: output/Dexty_Twitch_Notifier_Setup_v1.0.0.exe'
+Write-Host 'Ready: output/Dexty_Twitch_Notifier_Setup_v1.0.1.exe'
+
 
 
 

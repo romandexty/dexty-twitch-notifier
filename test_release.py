@@ -61,6 +61,56 @@ class ReleaseTests(unittest.TestCase):
                 window.exiting = True
                 window.close()
 
+    def test_removal_preference_persists_only_after_confirmation(self):
+        with tempfile.TemporaryDirectory() as folder:
+            self.module.DATA_DIR = folder
+            self.module.CONFIG_FILE = str(Path(folder) / 'config.json')
+            config = self.module.ConfigManager()
+            config.set('streamers', ['one', 'two'])
+            window = self.module.MainWindow(config)
+            window.edit_btn.setChecked(True)
+            box = self.module.QMessageBox
+            def decide(dialog, remove):
+                dialog.checkBox().setChecked(True)
+                role = box.DestructiveRole if remove else box.RejectRole
+                dialog._chosen = next(b for b in dialog.buttons() if dialog.buttonRole(b) == role)
+            with patch.object(box, 'exec', lambda d: decide(d, False)), patch.object(box, 'clickedButton', lambda d: d._chosen):
+                window.remove_streamer('one')
+            self.assertEqual(config.streamers(), ['one', 'two'])
+            self.assertTrue(config.get('confirm_channel_removal'))
+            with patch.object(box, 'exec', lambda d: decide(d, True)), patch.object(box, 'clickedButton', lambda d: d._chosen):
+                window.remove_streamer('one')
+            self.assertEqual(config.streamers(), ['two'])
+            self.assertFalse(self.module.ConfigManager().get('confirm_channel_removal'))
+            with patch.object(box, 'exec', side_effect=AssertionError('Unexpected confirmation')):
+                window.remove_streamer('two')
+            self.assertEqual(config.streamers(), [])
+            window.exiting = True
+            window.close()
+
+    def test_update_popup_states_and_release_validation(self):
+        import updates_ui
+        with patch.object(updates_ui.UpdatesDialog, 'start_check'):
+            for language in ('en', 'ru'):
+                i18n.LANGUAGE = language
+                dialog = updates_ui.UpdatesDialog()
+                for version, success in [('1.0.1', True), ('1.0.2', True), ('1.0.0', True), ('', False)]:
+                    dialog.show_result(version, success)
+                    self.assertTrue(dialog.status.text())
+                    self.assertTrue(dialog.retry.isEnabled())
+                    self.assertFalse(dialog.download.isHidden())
+                with patch.object(updates_ui.webbrowser, 'open') as opened:
+                    dialog.download.click()
+                    opened.assert_called_once_with(updates_ui.RELEASES_URL)
+                dialog.close()
+        self.assertGreater(updates_ui.version_tuple('v1.0.10'), updates_ui.version_tuple('1.0.2'))
+        with patch.object(updates_ui.requests, 'get') as get:
+            get.return_value.json.return_value = {'tag_name': 'v1.0.2'}
+            self.assertEqual(updates_ui.latest_version(), '1.0.2')
+            get.return_value.json.return_value = {'tag_name': 'v2.0.0', 'prerelease': True}
+            with self.assertRaises(ValueError):
+                updates_ui.latest_version()
+
     def test_public_refresh_saves_rotating_token_without_secret(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / 'token.json'

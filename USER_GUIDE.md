@@ -54,3 +54,13 @@
 
 
 
+
+## Updates / Обновления
+
+Click Updates in the main window to check GitHub for the latest stable release. Open download page opens GitHub in your browser. Install updates over the existing version to retain settings.
+
+Нажмите «Обновления» в главном окне для проверки последнего стабильного релиза на GitHub. «Открыть страницу загрузки» открывает GitHub в браузере. Устанавливайте обновление поверх текущей версии, чтобы сохранить настройки.
+
+When removing a channel, select Don’t ask again and confirm removal to skip future confirmations. Cancelling does not save this preference.
+
+При удалении канала отметьте «Больше не спрашивать» и подтвердите удаление, чтобы отключить последующие подтверждения. При отмене эта настройка не сохраняется.

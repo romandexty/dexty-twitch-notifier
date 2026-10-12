@@ -30,6 +30,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from updates_ui import UpdatesDialog, APP_VERSION
 from public_twitch import PublicTwitch, PUBLIC_CLIENT_ID, SignInRequired
 from setup_ui import SetupDialog as ConnectionsDialog
 from i18n import tr, FOLDER
@@ -63,6 +64,7 @@ DEFAULT_CONFIG = {
     "poll_interval": 15,
     "start_with_windows": False,
     "minimize_to_tray": True,
+    "confirm_channel_removal": True,
 }
 
 
@@ -1000,6 +1002,10 @@ class MainWindow(QMainWindow):
         self.connections_btn.setStyleSheet("padding:3px 9px;font-size:11px;border-radius:6px;")
         self.connections_btn.clicked.connect(self.connections_requested.emit)
         status_row.addWidget(self.connections_btn)
+        self.updates_btn = QPushButton(tr("Обновления"))
+        self.updates_btn.setStyleSheet("padding:3px 9px;font-size:11px;border-radius:6px;")
+        self.updates_btn.clicked.connect(self.show_updates)
+        status_row.addWidget(self.updates_btn)
         status_row.addStretch()
         status_row.addWidget(self.check_label)
         root.addLayout(status_row)
@@ -1085,21 +1091,29 @@ class MainWindow(QMainWindow):
     def remove_streamer(self, login):
         if not self.edit_btn.isChecked():
             return
-        answer = QMessageBox(self)
-        answer.setWindowTitle(tr('Удалить стримера?'))
-        answer.setText(tr("Удалить {login} из списка?").format(login=login))
-        answer.setInformativeText(tr('Его можно будет снова добавить по Twitch-логину.'))
-        answer.setIcon(QMessageBox.Question)
-        remove_button = answer.addButton(tr('Удалить'), QMessageBox.DestructiveRole)
-        cancel_button = answer.addButton(tr('Отмена'), QMessageBox.RejectRole)
-        answer.setDefaultButton(cancel_button)
-        answer.setEscapeButton(cancel_button)
-        answer.exec()
-        if answer.clickedButton() != remove_button:
-            return
+        if self.config.get("confirm_channel_removal", True):
+            answer = QMessageBox(self)
+            answer.setWindowTitle(tr('Удалить стримера?'))
+            answer.setText(tr("Удалить {login} из списка?").format(login=login))
+            answer.setInformativeText(tr('Его можно будет снова добавить по Twitch-логину.'))
+            answer.setIcon(QMessageBox.Question)
+            remove_button = answer.addButton(tr('Удалить'), QMessageBox.DestructiveRole)
+            cancel_button = answer.addButton(tr('Отмена'), QMessageBox.RejectRole)
+            answer.setDefaultButton(cancel_button)
+            answer.setEscapeButton(cancel_button)
+            dont_ask = QCheckBox(tr("Больше не спрашивать"), answer)
+            answer.setCheckBox(dont_ask)
+            answer.exec()
+            if answer.clickedButton() != remove_button:
+                return
+            if dont_ask.isChecked():
+                self.config.set("confirm_channel_removal", False)
         self.config.remove_streamer(login)
         self.refresh_requested.emit()
         self.rebuild_table()
+
+    def show_updates(self):
+        UpdatesDialog(self).exec()
 
     def open_streamer(self, login):
         webbrowser.open(f"https://twitch.tv/{login}")
@@ -1647,7 +1661,7 @@ if __name__ == "__main__":
     qt_app = QApplication(sys.argv)
     qt_app.setQuitOnLastWindowClosed(False)
     qt_app.setApplicationName("Dexty Twitch Notifier")
-    qt_app.setApplicationVersion("1.0.0")
+    qt_app.setApplicationVersion(APP_VERSION)
     if "--self-test" in sys.argv:
         sys.exit(self_test(qt_app, sys.argv[sys.argv.index("--self-test") + 1]))
     instance = SingleInstance(qt_app)

@@ -1,5 +1,10 @@
 # Changes
 
+## 1.0.1 — 2026-10-12
+
+- Add an English/Russian update popup with installed/latest versions, retry and GitHub download page. Checks run in the background only when requested.
+- Add a persistent Don’t ask again checkbox to channel-removal confirmation in English and Russian. The preference is saved only when removal is confirmed. Existing profiles keep confirmations enabled until they opt out.
+
 ## 1.0.0 — 2026-10-12
 
 - First public release build, prepared for final clean-install testing.

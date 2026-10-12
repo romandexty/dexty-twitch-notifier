@@ -12,6 +12,18 @@ except (OSError, ValueError):
     LANGUAGE = 'en'
 
 EN = {
+    'Обновления': 'Updates',
+    'Установленная версия: {version}': 'Installed version: {version}',
+    'Проверить обновления': 'Check for updates',
+    'Открыть страницу загрузки': 'Open download page',
+    'Закрыть': 'Close',
+    'Проверяем последнюю версию на GitHub…': 'Checking the latest version on GitHub…',
+    'Не удалось проверить обновления. Проверьте интернет или откройте страницу загрузки.': 'Could not check for updates. Check your internet connection or open the download page.',
+    'Доступна новая версия: {version}. Скачайте установщик со страницы релиза.': 'New version available: {version}. Download the installer from the release page.',
+    'У вас последняя версия: {version}.': 'You have the latest version: {version}.',
+    'Новых обновлений нет. Последняя опубликованная версия: {version}; ваша версия новее.': 'No newer update is available. Latest published version: {version}; your installed version is newer.',
+
+    "Больше не спрашивать": "Don’t ask again",
     'Настроить': 'Set up', 'Управление подключениями': 'Manage connections',
     'Завершить настройку': 'Finish setup', 'Настройки': 'Settings',
     'Введите Twitch-логин.': 'Enter a Twitch username.',
